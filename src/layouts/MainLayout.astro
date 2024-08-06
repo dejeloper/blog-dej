@@ -1,0 +1,92 @@
+---
+import "@fontsource/poppins";
+import { Icon } from "astro-icon/components";
+---
+
+<html lang="es" translate="no">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Blog de Desarrollo</title>
+  </head>
+  <body class="font-Poppins bg-[#f2f2f2] text-[#020202]">
+    <header class="bg-white flex items-center py-4">
+      <nav class="flex items-center justify-between md:w-[82%] w-[95%] mx-auto">
+        <div>
+          <h1>Blog de Desarrollo</h1>
+        </div>
+        <div
+          class="nav-lists md:static absolute bg-white md:min-h-fit min-h-[20vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5 duration-500"
+        >
+          <ul
+            class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8"
+          >
+            <li>
+              <a class="hover:text-[#208de5] font-medium px-4" href="#"
+                >Inicio</a
+              >
+            </li>
+            <li>
+              <a class="hover:text-[#208de5] font-medium px-4" href="#"
+                >Destacados</a
+              >
+            </li>
+            <li>
+              <a class="hover:text-[#208de5] font-medium px-4" href="#"
+                >Acerca de</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="flex items-center gap-6">
+          <button
+            type="button"
+            class="rounded-lg py-2 px-5 bg-[#020202] text-white hover:bg-[#208de5] transition-all duration-300 ease-out"
+          >
+            Dejeloper
+          </button>
+          <button
+            id="menu-button"
+            class="text-2xl cursor-pointer rounded-full bg-[#f2f2f2] p-2 md:hidden"
+          >
+            <Icon name="menu" />
+          </button>
+          <button
+            id="menu-button-close"
+            class="text-2xl cursor-pointer rounded-full bg-[#f2f2f2] p-2 md:hidden hidden"
+          >
+            <Icon name="close" />
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main
+      class="my-4 p-4 min-h-24 bg-white rounded-md flex items-center justify-between md:w-[82%] w-[95%] mx-auto"
+    >
+      <slot />
+    </main>
+    <script>
+      const button = document.querySelector("#menu-button") as Element;
+      const buttonClose = document.querySelector(
+        "#menu-button-close"
+      ) as Element;
+      const navList = document.querySelector(".nav-lists") as Element;
+
+      button.addEventListener("click", () => {
+        onToggleMenu();
+      });
+
+      buttonClose.addEventListener("click", () => {
+        onToggleMenu();
+      });
+
+      function onToggleMenu() {
+        button.classList.toggle("hidden");
+        buttonClose.classList.toggle("hidden");
+        navList.classList.toggle("top-[10%]");
+      }
+    </script>
+  </body>
+</html>
