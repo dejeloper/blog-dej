@@ -1,47 +1,32 @@
-# Astro Starter Kit: Minimal
+# Blog de Desarrollo
 
-```sh
-npm create astro@latest -- --template minimal
-```
+## Descripción
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+Bienvenidos a **Blog de Desarrollo**, un espacio donde comparto mis aprendizajes en desarrollo backend, frontend, arquitectura y bases de datos. Este blog nace de la necesidad de documentar mi progreso y compartir conocimientos con la comunidad.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Motivación
 
-## 🚀 Project Structure
+A lo largo de mi trayectoria, he adquirido una variedad de conocimientos que quiero compartir. Este blog es una plataforma para mantener mis apuntes organizados y accesibles, además de ofrecer contenido útil para otros desarrolladores.
 
-Inside of your Astro project, you'll see the following folders and files:
+El blog está dirigido a cualquier persona interesada en el desarrollo de software, desde principiantes hasta profesionales experimentados. Invito a la comunidad a interactuar a través de comentarios, aportando sus opiniones y correcciones.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Tecnologías y Temas Cubiertos
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- **Backend Development**
+- **Frontend Development**
+- **Arquitectura de Software**
+- **Bases de Datos**
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Estructura del Contenido
 
-Any static assets, like images, can be placed in the `public/` directory.
+Publico artículos que contienen ejemplos prácticos y discusiones sobre diversos temas. No se trata de tutoriales paso a paso, sino de exploraciones y reflexiones sobre conceptos clave.
 
-## 🧞 Commands
+## Contacto y Redes Sociales
 
-All commands are run from the root of the project, from a terminal:
+Puedes encontrarme y seguir mi trabajo en las siguientes plataformas:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Twitter: [@dejeloper](https://twitter.com/dejeloper)
+- LinkedIn: [@dejeloper](https://linkedin.com/in/dejeloper)
+- GitHub: [dejeloper](https://github.com/dejeloper)
+- Instagram: [@dejeloper](https://instagram.com/dejeloper)
+- Página web: [dejeloper.com](https://dejeloper.com)
