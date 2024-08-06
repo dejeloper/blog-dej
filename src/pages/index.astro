@@ -1,9 +1,15 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
+import RootLayout from "@/layouts/RootLayout.astro";
+import { useTranslations } from "@/i18n";
+
+const t = useTranslations();
 ---
 
-<MainLayout>
+<RootLayout
+  title={t("siteMetadata.title")}
+  description={t("siteMetadata.description")}
+>
   <section class="top-4 h-[100px]">
     <h2>Entradas</h2>
   </section>
-</MainLayout>
+</RootLayout>
