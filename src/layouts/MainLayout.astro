@@ -18,7 +18,7 @@ import { Icon } from "astro-icon/components";
           <h1>Blog de Desarrollo</h1>
         </div>
         <div
-          class="nav-lists md:static absolute bg-white md:min-h-fit min-h-[20vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5 duration-500"
+          class="nav-lists md:static absolute bg-white md:min-h-fit min-h-[20vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5 duration-700"
         >
           <ul
             class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8"
@@ -30,23 +30,24 @@ import { Icon } from "astro-icon/components";
             </li>
             <li>
               <a class="hover:text-[#208de5] font-medium px-4" href="#"
-                >Destacados</a
+                >Bienvenida</a
               >
             </li>
             <li>
               <a class="hover:text-[#208de5] font-medium px-4" href="#"
-                >Acerca de</a
+                >Destacados</a
               >
             </li>
           </ul>
         </div>
         <div class="flex items-center gap-6">
-          <button
-            type="button"
+          <a
+            href="https://dejeloper.com/"
             class="rounded-lg py-2 px-5 bg-[#020202] text-white hover:bg-[#208de5] transition-all duration-300 ease-out"
+            target="_blank"
           >
             Dejeloper
-          </button>
+          </a>
           <button
             id="menu-button"
             class="text-2xl cursor-pointer rounded-full bg-[#f2f2f2] p-2 md:hidden"
@@ -85,7 +86,7 @@ import { Icon } from "astro-icon/components";
       function onToggleMenu() {
         button.classList.toggle("hidden");
         buttonClose.classList.toggle("hidden");
-        navList.classList.toggle("top-[10%]");
+        navList.classList.toggle("top-[7%]");
       }
     </script>
   </body>
