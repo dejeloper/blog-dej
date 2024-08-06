@@ -1,13 +1,15 @@
 import { defineConfig } from "astro/config";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
-import icon from "astro-icon";
+import { SITE_METADATA } from "./src/consts.ts";
+import metaTags from "astro-meta-tags";
+
+import robotsTxt from "astro-robots-txt";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [
-    tailwind(),
-    icon({
-      iconDir: "public/icons",
-    }),
-  ],
+  prefetch: true,
+  site: SITE_METADATA.siteUrl,
+  integrations: [mdx(), sitemap(), tailwind(), metaTags(), robotsTxt()],
 });
