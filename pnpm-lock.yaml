@@ -39,12 +39,18 @@ importers:
         specifier: ^0.8.4
         version: 0.8.4(typescript@5.5.4)
       tailwindcss:
-        specifier: ^3.3.5
+        specifier: ^3.4.7
         version: 3.4.7
       typescript:
         specifier: ^5.3.3
         version: 5.5.4
     devDependencies:
+      '@tailwindcss/aspect-ratio':
+        specifier: ^0.4.2
+        version: 0.4.2(tailwindcss@3.4.7)
+      '@tailwindcss/container-queries':
+        specifier: ^0.1.1
+        version: 0.1.1(tailwindcss@3.4.7)
       '@tailwindcss/forms':
         specifier: ^0.5.7
         version: 0.5.7(tailwindcss@3.4.7)
@@ -607,6 +613,16 @@ packages:
 
   '@shikijs/core@1.12.1':
     resolution: {integrity: sha512-biCz/mnkMktImI6hMfMX3H9kOeqsInxWEyCHbSlL8C/2TR1FqfmGxTLRNwYCKsyCyxWLbB8rEqXRVZuyxuLFmA==}
+
+  '@tailwindcss/aspect-ratio@0.4.2':
+    resolution: {integrity: sha512-8QPrypskfBa7QIMuKHg2TA7BqES6vhBrDLOv8Unb6FcFyd3TjKbc6lcmb9UPQHxfl24sXoJ41ux/H7qQQvfaSQ==}
+    peerDependencies:
+      tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
+
+  '@tailwindcss/container-queries@0.1.1':
+    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
+    peerDependencies:
+      tailwindcss: '>=3.2.0'
 
   '@tailwindcss/forms@0.5.7':
     resolution: {integrity: sha512-QE7X69iQI+ZXwldE+rzasvbJiyV/ju1FGHH0Qn2W3FKbuYtqp8LKcy6iSw79fVUT5/Vvf+0XgLCeYVG+UV6hOw==}
@@ -2840,6 +2856,14 @@ snapshots:
   '@shikijs/core@1.12.1':
     dependencies:
       '@types/hast': 3.0.4
+
+  '@tailwindcss/aspect-ratio@0.4.2(tailwindcss@3.4.7)':
+    dependencies:
+      tailwindcss: 3.4.7
+
+  '@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.7)':
+    dependencies:
+      tailwindcss: 3.4.7
 
   '@tailwindcss/forms@0.5.7(tailwindcss@3.4.7)':
     dependencies:

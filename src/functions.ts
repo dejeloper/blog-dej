@@ -10,5 +10,5 @@ export const sortBlogPosts = (
 };
 
 export const excludeDrafts = ({ data }: CollectionEntry<"blog">): boolean => {
-  return import.meta.env.PROD ? true : true;
+  return import.meta.env.PROD ? !data.draft : true;
 };
