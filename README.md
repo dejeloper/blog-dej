@@ -28,5 +28,4 @@ Puedes encontrarme y seguir mi trabajo en las siguientes plataformas:
 - Twitter: [@dejeloper](https://twitter.com/dejeloper)
 - LinkedIn: [@dejeloper](https://linkedin.com/in/dejeloper)
 - GitHub: [dejeloper](https://github.com/dejeloper)
-- Instagram: [@dejeloper](https://instagram.com/dejeloper)
 - Página web: [dejeloper.com](https://dejeloper.com)
