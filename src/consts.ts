@@ -4,6 +4,8 @@ export const SITE_METADATA = {
   robots: "index, follow",
 };
 
+export const siteUrl = "https://blog-dej.vercel.app/";
+
 export const ITEMS_PER_PAGE = 5;
 
 export const NAVIGATION = [
