@@ -15,7 +15,7 @@ importers:
         specifier: ^2.1.1
         version: 2.3.1(astro@4.13.2(typescript@5.5.4))
       '@astrojs/rss':
-        specifier: ^4.0.5
+        specifier: ^4.0.7
         version: 4.0.7
       '@astrojs/sitemap':
         specifier: ^3.0.5
