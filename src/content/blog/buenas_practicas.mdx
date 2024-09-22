@@ -1,0 +1,1588 @@
+---
+title: Buenas Prácticas en C#
+date: 2024-08-31
+draft: false
+postLayout: simple
+summary: ¿Qué son para mí las buenas prácticas? Algunas anotaciones y ejemplos en C#.
+tags: ["backend", "architecture"]
+cover: "02_buenas_practicas/cover.png"
+---
+
+# Buenas Prácticas en C#
+
+## Introducción
+
+He programado más de 10 años de mi vida profesional con C# y a lo largo de los años, he moldeado esta idea de "escribir código que funcione no es suficiente". Con tanta experiencia, aunque las considero más vivencias, he aprendido que la clave para crear software de calidad (mantenible y escalable), radica en seguir buenas prácticas de programación. A continuación compartiré algunas de las prácticas que he encontrado más útiles en **mi experiencia profesional**.
+
+> «Cualquier idiota puede escribir un programa que una computadora entienda, los verdaderos programadores pueden escribir código que los humanos entiendan.»  
+> — [Martin Fowler](https://x.com/martinfowler)
+
+Debido a esta frase, y el hecho de que actualmente en mi empresa tengo un poco de libertad (ando haciendo una migración en C#), quiero hablar sobre las buenas prácticas que considero coherentes y mostrar a quienes lean esto un poco de mi conocimiento en la materia.
+
+**Disclaimer:** No soy un experto, solo alguien que ha visto mucho código y ha leído bastante sobre el tema, por lo que algo he interiorizado. Puede que esté equivocado, y si es así, los insultos son bienvenidos en [X (Twitter)](https://x.com/dejeloper) o donde prefieran.
+
+## Definiciones
+
+**¿Qué son las `buenas prácticas`?**
+
+Son un conjunto de recomendaciones, técnicas y principios que los desarrolladores seguimos, para escribir código que sea eficiente, fácil de entender y que funcione correctamente. A mí me gusta definirlo más sencillo como:
+
+> **"Código limpio, reutilizable, y escalable."**
+
+Además del desarrollo de software, eventualmente nos enfrentamos a dos conceptos que van de la mano a las buenas prácticas. Uno de forma positiva y otro de forma negativa: `Deuda técnica` y `Refactorización`.
+
+**`Deuda técnica`**
+
+Podríamos definir a la deuda técnica como decisiones, que no son óptimas, que se toman durante el desarrollo del proyecto, con el fin de generar avances rápidos y a corto plazo. Esto finalmente se convierte en un código complejo, menos mantenible y con mayor probabilidad de errores. En muchas ocasiones los tiempos de entrega, la falta de conocimiento, el cambio de los requisitos y el diseño deficiente, son factores a los que nos enfrentamos y finalmente se convierten en deudas técnicas.
+
+Estas deudas, que eventualmente se deberán pagar, son:
+
+- Deuda de arquitectura, son las que se presentan cuando el sistema no se adapta a las necesidades del proyecto, dificultando el crecimiento o el mantenimiento.
+- Deuda intencional, son las decisiones consientes que se toman para acelerar el proceso de desarrollo, como soluciones provisionales, y de las cuales se tiene la intención de mejorar eventualmente.
+- Deuda inadvertida, son las que surgen debido al desconocimiento, los errores o la falta de planificación, muchas veces, se pasa por alto hasta que algo falla.
+
+Por ejemplo:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class OrderService
+		{
+				public void ProcessOrder(Order order)
+				{
+					if (order.Type == "Standard")
+					{
+							// Lógica para procesar un pedido estándar
+					}
+					else if (order.Type == "Express")
+					{
+							// Lógica para procesar un pedido exprés
+					}
+					else if (order.Type == "International")
+					{
+							// Lógica para procesar un pedido internacional
+					}
+					// Posiblemente más tipos en el futuro
+			}
+		}
+		```
+	</div>
+</details>
+
+Y, ¿Cómo se pagan las deudas técnicas? La respuesta es:
+
+**`Refactorización`**.
+
+Es el proceso de mejorar y reorganizar el código existente sin alterar su comportamiento externo o funcionalidad. El objetivo principal de la refactorización es hacer el código limpio, legible, manteible y escalable, mejorando la estructura interna sin cambiar el funcionamiento del software. Como consecuencia, en la mayoría de casos, esto soluciona la deuda técnica.
+
+Para solucionar la **deuda técnica** anterior, esta sería una refactorización:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public interface IOrderProcessor
+		{
+				void Process(Order order);
+		}
+
+    	public class StandardOrderProcessor : IOrderProcessor
+    	{
+    			public void Process(Order order)
+    			{
+    					// Lógica para procesar un pedido estándar
+    			}
+    	}
+
+    	public class ExpressOrderProcessor : IOrderProcessor
+    	{
+    			public void Process(Order order)
+    			{
+    					// Lógica para procesar un pedido exprés
+    			}
+    	}
+
+    	public class InternationalOrderProcessor : IOrderProcessor
+    	{
+    			public void Process(Order order)
+    			{
+    					// Lógica para procesar un pedido internacional
+    			}
+    	}
+
+    	public class OrderService
+    	{
+    			private readonly Dictionary<string, IOrderProcessor> _processors;
+
+    			public OrderService()
+    			{
+    					_processors = new Dictionary<string, IOrderProcessor>
+    					{
+    							{ "Standard", new StandardOrderProcessor() },
+    							{ "Express", new ExpressOrderProcessor() },
+    							{ "International", new InternationalOrderProcessor() }
+    					};
+    			}
+
+    			public void ProcessOrder(Order order)
+    			{
+    					if (_processors.ContainsKey(order.Type))
+    					{
+    							_processors[order.Type].Process(order);
+    					}
+    					else
+    					{
+    							throw new NotSupportedException($"El tipo de pedido '{order.Type}' no es compatible.");
+    					}
+    			}
+    	}
+    	```
+    </div>
+
+</details>
+
+La refactorización no implica netamente acortar la sintaxis o minimizar las líneas de código, lo que busca es trascender con el código para que este pueda ser modular, escalable, mantenible, mucho más fácil de probar y permitir que todos los programadores podamos entenderlo.
+
+## Lineamientos o Prácticas
+
+Podemos listar algunas cosas que debemos tener en cuenta para seguir unos lineamientos y así aplicar buenas prácticas en nuestro cód igo, aunque no es todo.
+
+---
+
+### DRY
+
+`Don’t Repeat Yourself (No te repitas)`
+
+El principio DRY promueve la creación de software modular, donde el código repetido se abstrae, lo que lleva a un diseño más limpio y eficiente.
+
+> «Cada pieza de conocimiento debe tener una única representación autorizada, sin ambigüedades, dentro de un sistema.»  
+> — Andy Hunt y Dave Thomas en _The Pragmatic Programmer: From Journeyman to Master_
+
+A veces puede ser difícil reconocer el código duplicado, y en algunas ocasiones, la forma de solucionarlo puede llegar a ser más compleja. Pero para ello, se debe tener en cuenta la regla de tres:
+
+> Repetir una vez el mismo código puede ser aceptable, pero la tercera vez que utilizamos el mismo código es señal inequívoca de que hay que refactorizar y solucionar la duplicación.
+
+Algo de código:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+	```csharp
+	public class UserService
+	{
+			public void CreateUser(string name, int age)
+			{
+					// Validación de la entrada
+					if (string.IsNullOrWhiteSpace(name))
+					{
+							throw new ArgumentException("El nombre no puede estar vacío.");
+					}
+
+    				if (age < 0 || age > 120)
+    				{
+    						throw new ArgumentException("La edad debe estar entre 0 y 120.");
+    				}
+
+    				// Lógica para crear el usuario
+    				Console.WriteLine("Usuario creado.");
+    		}
+
+    		public void UpdateUser(string name, int age)
+    		{
+    				// Validación de la entrada (lógica duplicada)
+    				if (string.IsNullOrWhiteSpace(name))
+    				{
+    						throw new ArgumentException("El nombre no puede estar vacío.");
+    				}
+
+    				if (age < 0 || age > 120)
+    				{
+    						throw new ArgumentException("La edad debe estar entre 0 y 120.");
+    				}
+
+    				// Lógica para actualizar el usuario
+    				Console.WriteLine("Usuario actualizado.");
+    		}
+    }
+    ```
+    </div>
+
+</details>
+
+En este código, vemos que la validación de 'nombre' y 'edad' se repite en ambas funciones. Podemos refactorizar el código para eliminar la duplicación extrayendo la lógica de validación en un método separado:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class UserService
+		{
+				// Método privado para validar la entrada
+				private void ValidateUserInput(string name, int age)
+				{
+						if (string.IsNullOrWhiteSpace(name))
+						{
+								throw new ArgumentException("El nombre no puede estar vacío.");
+						}
+
+    					if (age < 0 || age > 120)
+    					{
+    							throw new ArgumentException("La edad debe estar entre 0 y 120.");
+    					}
+    			}
+
+    			public void CreateUser(string name, int age)
+    			{
+    					// Usamos el método de validación
+    					ValidateUserInput(name, age);
+
+    					// Lógica para crear el usuario
+    					Console.WriteLine("Usuario creado.");
+    			}
+
+    			public void UpdateUser(string name, int age)
+    			{
+    					// Usamos el método de validación
+    					ValidateUserInput(name, age);
+
+    					// Lógica para actualizar el usuario
+    					Console.WriteLine("Usuario actualizado.");
+    			}
+
+    	}
+    	```
+    </div>
+
+</details>
+
+Ahora, la mantenibilidad mejora porque si en el futuro se requiere cambiar la validación, se haría en un solo lugar. El código es más limpio y fácil de entender.
+
+---
+
+### Nombres Significativos
+
+No hay un estándar único para nombrar a los 'identificadores', pero se recomienda que estos sean descriptivos, coherentes, legibles y que reflejen claramente su propósito en el software.
+
+**Convenciones de nomenclatura en C#:**
+
+- **PascalCase**: Clases, Métodos o funciones, Propiedades, NameSpaces, Interfaces (prefijo `I`), Enum, Structs y Delegates.
+- **camelCase**: Campos estáticos que sean `private` o `internal`, parámetros de métodos y variables locales.
+- **UPPER_SNAKE_CASE**: constantes.
+
+Aquí un ejemplo:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		// Namespace en PascalCase
+		namespace MyApplication.Services
+		{
+				// Interface en PascalCase con prefijo 'I'
+				public interface IOrderProcessor
+				{
+						// Propiedad en PascalCase
+						DateTime OrderDate { get; }
+
+    					// Método en PascalCase
+    					void ProcessOrder();
+    			}
+
+    			// Clase en PascalCase
+    			public class OrderProcessor : IOrderProcessor
+    			{
+    					// Campo privado en camelCase
+    					private readonly DateTime _orderDate;
+
+    					// Campo estático en camelCase
+    					private static readonly string _defaultCurrency = "USD";
+
+    					// Propiedad en PascalCase
+    					public DateTime OrderDate => _orderDate;
+
+    					// Constructor en PascalCase
+    					public OrderProcessor(DateTime orderDate)
+    					{
+    							_orderDate = orderDate;
+    					}
+
+    					// Método en PascalCase
+    					public void ProcessOrder()
+    					{
+    							// Variable local en camelCase
+    							var totalAmount = CalculateTotal();
+    							Console.WriteLine($"Processing order for {OrderDate}. Total amount: {totalAmount}");
+    					}
+
+    					// Método privado en PascalCase
+    					private decimal CalculateTotal()
+    					{
+    							// Constante en UPPER_SNAKE_CASE
+    							const decimal TAX_RATE = 0.07m;
+
+    							// Variable local en camelCase
+    							decimal basePrice = 100m;
+
+    							return basePrice * (1 + TAX_RATE);
+    					}
+    			}
+
+    			// Enum en PascalCase
+    			public enum OrderStatus
+    			{
+    					Pending,
+    					Processed,
+    					Shipped,
+    					Delivered
+    			}
+
+    			// Struct en PascalCase
+    			public struct OrderDetails
+    			{
+    					// Propiedades en PascalCase
+    					public int OrderId { get; set; }
+    					public string CustomerName { get; set; }
+    			}
+
+    			// Delegate en PascalCase
+    			public delegate void OrderProcessedEventHandler(object sender, EventArgs e);
+
+    	}
+    	```
+    </div>
+
+</details>
+
+[Convenciones y Reglas de Nomenclatura de Identificadores de C#](https://learn.microsoft.com/es-es/dotnet/csharp/fundamentals/coding-style/identifier-names)
+
+Es importante seguir convenciones de nomenclatura coherentes para mejorar la legibilidad y el mantenimiento del código.
+
+---
+
+### Code Smells
+
+Un 'code smell' es una señal de que algo podría estar mal en el código, aunque no necesariamente sea un error. Estos pueden afectar eventualmente al software, generando problemas de mantenimiento, estabilidad o calidad. Aquí un resumen de los más comunes:
+
+- **Código duplicado:** Cuando se tiene código idéntico o similar en múltiples partes del sistema. Esto genera dificultad a la hora de hacer mantenimiento y actualización.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class ReportGenerator
+		{
+				public void GenerateSalesReport()
+				{
+						// Obtener datos de ventas
+						var salesData = GetSalesData();
+
+    					// Formatear los datos
+    					var formattedData = FormatData(salesData);
+
+    					// Imprimir reporte
+    					PrintReport(formattedData);
+    			}
+
+    			public void GenerateInventoryReport()
+    			{
+    					// Obtener datos de inventario
+    					var inventoryData = GetInventoryData();
+
+    					// Formatear los datos
+    					var formattedData = FormatData(inventoryData);
+
+    					// Imprimir reporte
+    					PrintReport(formattedData);
+    			}
+
+    			private List<Sale> GetSalesData()
+    			{
+    					// Lógica para obtener datos de ventas (simulación)
+    					return new List<Sale>();
+    			}
+
+    			private List<InventoryItem> GetInventoryData()
+    			{
+    					// Lógica para obtener datos de inventario (simulación)
+    					return new List<InventoryItem>();
+    			}
+
+    			private string FormatData<T>(List</T> data)
+    			{
+    					// Lógica para formatear los datos (simulación)
+    					return string.Join(", ", data);
+    			}
+
+    			private void PrintReport(string data)
+    			{
+    					// Lógica para imprimir el reporte (simulación)
+    					Console.WriteLine("Reporte: " + data);
+    			}
+    	}
+    	```
+    </div>
+
+</details>
+
+En el método GenerateSalesReport y GenerateInventoryReport tienen código duplicado para formatear y imprimir los reportes.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class ReportGenerator
+		{
+				public void GenerateSalesReport()
+				{
+						var salesData = GetSalesData();
+						GenerateReport(salesData);
+				}
+
+    			public void GenerateInventoryReport()
+    			{
+    					var inventoryData = GetInventoryData();
+    					GenerateReport(inventoryData);
+    			}
+
+    			private void GenerateReport<T>(List</T> data)
+    			{
+    					var formattedData = FormatData(data);
+    					PrintReport(formattedData);
+    			}
+
+    			private List<Sale> GetSalesData()
+    			{
+    					// Lógica para obtener datos de ventas (simulación)
+    					return new List<Sale>();
+    			}
+
+    			private List<InventoryItem> GetInventoryData()
+    			{
+    					// Lógica para obtener datos de inventario (simulación)
+    					return new List<InventoryItem>();
+    			}
+
+    			private string FormatData<T>(List</T> data)
+    			{
+    					// Lógica para formatear los datos (simulación)
+    					return string.Join(", ", data);
+    			}
+
+    			private void PrintReport(string data)
+    			{
+    					// Lógica para imprimir el reporte (simulación)
+    					Console.WriteLine("Reporte: " + data);
+    			}
+    	}
+    	```
+    </div>
+
+</details>
+
+Se creó un método genérico GenerateReport&lt;T&gt; que encapsula la lógica común. Esto elimina la duplicación de código, mejora la legibilidad y facilita el mantenimiento.
+
+<hr />
+
+- **Métodos o funciones muy largas:** Fragmentos de código que hacen demasiadas cosas. Son difíciles de leer, entender, probar y mantener.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class OrderProcessor
+		{
+				public void ProcessOrder(Order order)
+				{
+						// Validación del pedido
+						if (order.Items.Count == 0)
+						{
+								throw new InvalidOperationException("No se pueden procesar pedidos sin artículos.");
+						}
+
+    					if (order.Customer == null)
+    					{
+    							throw new InvalidOperationException("El pedido debe tener un cliente.");
+    					}
+
+    					// Calcular total
+    					decimal total = 0;
+    					foreach (var item in order.Items)
+    					{
+    							total += item.Price * item.Quantity;
+    					}
+    					order.TotalAmount = total;
+
+    					// Aplicar descuento si es necesario
+    					if (order.Customer.IsLoyalCustomer)
+    					{
+    							order.TotalAmount *= 0.9m; // 10% de descuento
+    					}
+
+    					// Procesar el pago
+    					if (!ProcessPayment(order))
+    					{
+    							throw new InvalidOperationException("El pago falló.");
+    					}
+
+    					// Generar factura
+    					GenerateInvoice(order);
+
+    					// Enviar confirmación al cliente
+    					SendConfirmationEmail(order.Customer.Email);
+    			}
+
+    			private bool ProcessPayment(Order order)
+    			{
+    					// Lógica de procesamiento de pago (simulación)
+    					return true;
+    			}
+
+    			private void GenerateInvoice(Order order)
+    			{
+    					// Lógica de generación de factura (simulación)
+    			}
+
+    			private void SendConfirmationEmail(string email)
+    			{
+    					// Lógica de envío de correo (simulación)
+    			}
+    	}
+    	```
+    </div>
+
+</details>
+
+El método ProcessOrder es largo y maneja múltiples responsabilidades, lo que puede dificultar la comprensión y el mantenimiento.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class OrderProcessor
+		{
+				public void ProcessOrder(Order order)
+				{
+						ValidateOrder(order);
+						CalculateTotal(order);
+						ApplyDiscount(order);
+						ProcessPayment(order);
+						GenerateInvoice(order);
+						SendConfirmation(order.Customer.Email);
+				}
+
+    			private void ValidateOrder(Order order)
+    			{
+    					if (order.Items.Count == 0)
+    					{
+    							throw new InvalidOperationException("No se pueden procesar pedidos sin artículos.");
+    					}
+
+    					if (order.Customer == null)
+    					{
+    							throw new InvalidOperationException("El pedido debe tener un cliente.");
+    					}
+    			}
+
+    			private void CalculateTotal(Order order)
+    			{
+    					decimal total = 0;
+    					foreach (var item in order.Items)
+    					{
+    							total += item.Price * item.Quantity;
+    					}
+    					order.TotalAmount = total;
+    			}
+
+    			private void ApplyDiscount(Order order)
+    			{
+    					if (order.Customer.IsLoyalCustomer)
+    					{
+    							order.TotalAmount *= 0.9m; // 10% de descuento
+    					}
+    			}
+
+    			private void ProcessPayment(Order order)
+    			{
+    					if (!ExecutePayment(order))
+    					{
+    							throw new InvalidOperationException("El pago falló.");
+    					}
+    			}
+
+    			private bool ExecutePayment(Order order)
+    			{
+    					// Lógica de procesamiento de pago (simulación)
+    					return true;
+    			}
+
+    			private void GenerateInvoice(Order order)
+    			{
+    					// Lógica de generación de factura (simulación)
+    			}
+
+    			private void SendConfirmation(string email)
+    			{
+    					// Lógica de envío de correo (simulación)
+    			}
+
+    	}
+
+    	```
+    </div>
+
+</details>
+
+Ahora el método ProcessOrder delega responsabilidades a métodos más pequeños y específicos. Cada método se encarga de una tarea particular.
+
+<hr />
+
+- **Clases grandes:** Modelos que tienen demasiadas responsabilidades. Esto rompe el principio de responsabilidad única y dificulta el mantenimiento.`
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class UserManager
+		{
+				// Gestión de usuarios
+				public void AddUser(string username, string password)
+				{
+						// Lógica para añadir un nuevo usuario
+						Console.WriteLine("Usuario añadido: " + username);
+				}
+
+    			public void DeleteUser(string username)
+    			{
+    					// Lógica para eliminar un usuario
+    					Console.WriteLine("Usuario eliminado: " + username);
+    			}
+
+    			public void UpdateUserPassword(string username, string newPassword)
+    			{
+    					// Lógica para actualizar la contraseña de un usuario
+    					Console.WriteLine("Contraseña actualizada para el usuario: " + username);
+    			}
+
+    			// Autenticación
+    			public bool Authenticate(string username, string password)
+    			{
+    					// Lógica para autenticar un usuario
+    					Console.WriteLine("Usuario autenticado: " + username);
+    					return true;
+    			}
+
+    			// Notificaciones
+    			public void SendPasswordResetEmail(string username)
+    			{
+    					// Lógica para enviar un correo de restablecimiento de contraseña
+    					Console.WriteLine("Correo de restablecimiento de contraseña enviado a: " + username);
+    			}
+
+    			public void SendWelcomeEmail(string username)
+    			{
+    					// Lógica para enviar un correo de bienvenida
+    					Console.WriteLine("Correo de bienvenida enviado a: " + username);
+    			}
+
+    	}
+    	```
+    </div>
+
+</details>
+
+La clase UserManager es demasiado grande porque combina la gestión de usuarios, autenticación y notificaciones en una sola clase.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		// Clase para la gestión de usuarios
+		public class UserService
+		{
+			public void AddUser(string username, string password)
+			{
+				// Lógica para añadir un nuevo usuario
+				Console.WriteLine("Usuario añadido: " + username);
+			}
+			public void DeleteUser(string username)
+			{
+				// Lógica para eliminar un usuario
+				Console.WriteLine("Usuario eliminado: " + username);
+			}
+			public void UpdateUserPassword(string username, string newPassword)
+			{
+				// Lógica para actualizar la contraseña de un usuario
+				Console.WriteLine("Contraseña actualizada para el usuario: " + username);
+			}
+		}
+
+    	// Clase para la autenticación
+    	public class AuthenticationService
+    	{
+    		public bool Authenticate(string username, string password)
+    		{
+    			// Lógica para autenticar un usuario
+    			Console.WriteLine("Usuario autenticado: " + username);
+    			return true;
+    		}
+    	}
+
+    	// Clase para el manejo de notificaciones
+    	public class NotificationService
+    	{
+    		public void SendPasswordResetEmail(string username)
+    		{
+    			// Lógica para enviar un correo de restablecimiento de contraseña
+    			Console.WriteLine("Correo de restablecimiento de contraseña enviado a: " + username);
+    			}
+    		public void SendWelcomeEmail(string username)
+    		{
+    			// Lógica para enviar un correo de bienvenida
+    			Console.WriteLine("Correo de bienvenida enviado a: " + username);
+    		}
+    	}
+    	```
+    	</div>
+    </details>
+
+Ahora se dividen las responsabilidades en tres clases: UserService (gestión de usuarios), AuthenticationService (autenticación) y NotificationService (notificaciones). Cada clase tiene una responsabilidad única, lo que sigue el principio de responsabilidad única (SRP).
+
+<hr />
+
+- **Uso excesivo de variables globales:** Aunque pueden ser convenientes en ciertos casos, abusar de las variables globales tiende a generar un acoplamiento innecesario entre diferentes partes del código, lo que complica las pruebas y dificulta el mantenimiento.
+
+Problemática`:
+
+<details open>
+
+  <summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public static class GlobalSettings
+		{
+				public static string DatabaseConnectionString = "Server=myServer;Database=myDB;User Id=myUser;Password=myPass;";
+				public static int MaxRetries = 3;
+				public static bool IsDebugMode = true;
+		}
+
+    	public class DataAccess
+    	{
+    			public void ConnectToDatabase()
+    			{
+    					if (GlobalSettings.IsDebugMode)
+    					{
+    							Console.WriteLine("Conectando en modo depuración...");
+    					}
+
+    					Console.WriteLine("Conectando a la base de datos con: " + GlobalSettings.DatabaseConnectionString);
+    			}
+    	}
+
+    	public class RetryPolicy
+    	{
+    			public void ExecuteWithRetry(Action action)
+    			{
+    					for (int i = 0; i < GlobalSettings.MaxRetries; i++)
+    					{
+    							try
+    							{
+    									action();
+    									break;
+    							}
+    							catch (Exception ex)
+    							{
+    									Console.WriteLine("Intento fallido: " + (i + 1) + ". Excepción: " + ex.Message);
+    							}
+    					}
+    			}
+    	}
+    	```
+    </div>
+
+</details>
+
+Las variables globales GlobalSettings son utilizadas directamente en las clases DataAccess y RetryPolicy, lo que genera un acoplamiento fuerte entre estas clases y las variables globales, dificultando las pruebas unitarias y la mantenibilidad.
+
+`Solución propuesta`:
+
+<details open>
+	<summary>Código (Clic para ver/ocultar)</summary>
+	<div>
+		```csharp
+		public class AppSettings
+		{
+				public string DatabaseConnectionString { get; set; }
+				public int MaxRetries { get; set; }
+				public bool IsDebugMode { get; set; }
+		}
+
+    	public class DataAccess
+    	{
+    			private readonly AppSettings _appSettings;
+
+    			public DataAccess(AppSettings appSettings)
+    			{
+    					_appSettings = appSettings;
+    			}
+
+    			public void ConnectToDatabase()
+    			{
+    					if (_appSettings.IsDebugMode)
+    					{
+    							Console.WriteLine("Conectando en modo depuración...");
+    					}
+
+    					Console.WriteLine("Conectando a la base de datos con: " + _appSettings.DatabaseConnectionString);
+    			}
+    	}
+
+    	public class RetryPolicy
+    	{
+    			private readonly AppSettings _appSettings;
+
+    			public RetryPolicy(AppSettings appSettings)
+    			{
+    					_appSettings = appSettings;
+    			}
+
+    			public void ExecuteWithRetry(Action action)
+    			{
+    					for (int i = 0; i < _appSettings.MaxRetries; i++)
+    					{
+    							try
+    							{
+    									action();
+    									break;
+    							}
+    							catch (Exception ex)
+    							{
+    									Console.WriteLine("Intento fallido: " + (i + 1) + ". Excepción: " + ex.Message);
+    							}
+    					}
+    			}
+    	}
+
+    	// Uso
+    	var appSettings = new AppSettings
+    	{
+    			DatabaseConnectionString = "Server=myServer;Database=myDB;User Id=myUser;Password=myPass;",
+    			MaxRetries = 3,
+    			IsDebugMode = true
+    	};
+
+    	var dataAccess = new DataAccess(appSettings);
+    	dataAccess.ConnectToDatabase();
+
+    	var retryPolicy = new RetryPolicy(appSettings);
+    	retryPolicy.ExecuteWithRetry(() => Console.WriteLine("Ejecutando acción crítica..."));
+    	```
+    </div>
+
+</details>
+
+Ahora se utiliza una clase AppSettings que encapsula la configuración de la aplicación. Esta clase es inyectada en DataAccess y RetryPolicy a través de sus constructores, eliminando la dependencia de las variables globales y mejorando la flexibilidad del código.
+
+- **Acoplamiento Alto:** Cuando las clases o módulos dependen demasiado unos de otros, la flexibilidad del código disminuye, lo que dificulta su mantenimiento y evolución a medida que el software crece.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+		```csharp 
+		public class Pedido
+		{
+				public string Descripcion { get; set; }
+				public decimal Monto { get; set; }
+		}
+		
+		public class Cliente
+		{
+				public string Nombre { get; set; }
+				public Pedido Pedido { get; set; }
+
+    			public Cliente(string nombre, Pedido pedido)
+    			{
+    					Nombre = nombre;
+    					Pedido = pedido;
+    			}
+
+    			public void MostrarDetallePedido()
+    			{
+    					Console.WriteLine($"Cliente: {Nombre}, Pedido: {Pedido.Descripcion}, Monto: {Pedido.Monto}");
+    			}
+    	}
+
+    	class Program
+    	{
+    			static void Main(string[] args)
+    			{
+    					Pedido pedido = new Pedido { Descripcion = "Laptop", Monto = 1200.99M };
+    					Cliente cliente = new Cliente("Juan", pedido);
+    					cliente.MostrarDetallePedido();
+    			}
+    	}
+    	```
+    		</div>
+
+</details>
+
+En este caso, la clase Cliente está directamente acoplada a Pedido. Si la clase Pedido cambia (por ejemplo, si se renombra la propiedad Monto), tendrás que modificar también la clase Cliente. Esto complica el mantenimiento a medida que el código crece.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp 
+	
+	// Definir una interfaz para el Pedido
+	public interface IPedido
+	{
+			string ObtenerDescripcion();
+			decimal ObtenerMonto();
+	}
+
+    	// Implementación concreta de la interfaz IPedido
+    	public class Pedido : IPedido
+    	{
+    			public string Descripcion { get; set; }
+    			public decimal Monto { get; set; }
+
+    			public string ObtenerDescripcion()
+    			{
+    					return Descripcion;
+    			}
+
+    			public decimal ObtenerMonto()
+    			{
+    					return Monto;
+    			}
+    	}
+
+    	// Clase Cliente que depende de la interfaz IPedido en lugar de la clase Pedido concreta
+    	public class Cliente
+    	{
+    			public string Nombre { get; set; }
+    			private readonly IPedido \_pedido;
+
+    			public Cliente(string nombre, IPedido pedido)
+    			{
+    					Nombre = nombre;
+    					_pedido = pedido;
+    			}
+
+    			public void MostrarDetallePedido()
+    			{
+    					Console.WriteLine($"Cliente: {Nombre}, Pedido: {_pedido.ObtenerDescripcion()}, Monto: {_pedido.ObtenerMonto()}");
+    			}
+    	}
+
+    	class Program
+    	{
+    			static void Main(string[] args)
+    			{
+    					IPedido pedido = new Pedido { Descripcion = "Laptop", Monto = 1200.99M };
+    					Cliente cliente = new Cliente("Juan", pedido);
+
+    					cliente.MostrarDetallePedido();
+    			}
+    	}
+    ```
+    	</div>
+
+</details>
+
+Ahora tenemos una interfaz que define el comportamiento de un pedido (IPedido). Esto significa que la clase Cliente ya no depende directamente de una implementación concreta de la clase Pedido, sino de una abstracción (la interfaz).
+
+Además, ahora se inyecta una instancia de IPedido en el constructor de la clase Cliente, lo que permite desacoplar la implementación de la clase Pedido. En el futuro, se podría cambiar la implementación de IPedido sin modificar la clase Cliente.
+
+- **Dependencias circulares:** Un problema más grave que el acoplamiento es cuando dos o más clases dependen mutuamente entre sí, lo que enreda la arquitectura y complica significativamente el mantenimiento del software.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp 
+    public class A
+    {
+    		public B ClaseB { get; set; }
+
+    		public A(B claseB)
+    		{
+    				ClaseB = claseB;
+    		}
+
+    		public void MetodoA()
+    		{
+    				Console.WriteLine("Método en la clase A.");
+    				ClaseB.MetodoB();  // A depende de B
+    		}
+    }
+
+    public class B
+    {
+    		public A ClaseA { get; set; }
+
+    		public B(A claseA)
+    		{
+    				ClaseA = claseA;
+    		}
+
+    		public void MetodoB()
+    		{
+    				Console.WriteLine("Método en la clase B.");
+    				ClaseA.MetodoA();  // B depende de A
+    		}
+    }
+
+    class Program
+    {
+    		static void Main(string[] args)
+    		{
+    				A claseA = new A(null);
+    				B claseB = new B(claseA);
+
+    				claseA.ClaseB = claseB; // Ahora A depende de B, y B de A
+
+    				claseA.MetodoA();
+    		}
+    }
+    ```
+    </div>
+
+</details>
+
+Aquí, la clase A tiene una referencia a la clase B, y la clase B tiene una referencia a A. Esta dependencia mutua puede causar un ciclo infinito o errores al ejecutar los métodos.
+
+Este tipo de arquitectura es difícil de escalar. Si se cambia algo en A, es probable que también tengas que cambiar algo en B y viceversa, lo que complica mucho el mantenimiento.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp 	
+		// Definir una interfaz para que A no dependa directamente de B
+		public interface IB
+		{
+				void MetodoB();
+		}
+
+    	public class A
+    	{
+    			private readonly IB _b;
+
+    			public A(IB b)
+    			{
+    					_b = b;
+    			}
+
+    			public void MetodoA()
+    			{
+    					Console.WriteLine("Método en la clase A.");
+    					_b.MetodoB(); // A depende de la interfaz IB en lugar de B
+    			}
+    	}
+
+    	public class B : IB
+    	{
+    			public void MetodoB()
+    			{
+    					Console.WriteLine("Método en la clase B.");
+    			}
+    	}
+
+    	class Program
+    	{
+    			static void Main(string[] args)
+    			{
+    					IB claseB = new B(); // Inyección de dependencias
+    					A claseA = new A(claseB); // A ya no depende directamente de B
+
+    					claseA.MetodoA();
+    			}
+    	}
+    ```
+    </div>
+
+</details>
+
+Podemos ver varios puntos importantes en la Solución propuesta:
+
+- En lugar de que la clase A dependa directamente de B, ahora depende de una interfaz IB. Esto rompe la dependencia circular.
+- La clase B ahora implementa la interfaz IB, lo que le permite seguir trabajando con A sin depender de ella directamente.
+- Con esta estructura, la clase A solo conoce la interfaz IB, pero no sabe ni le importa la implementación de B. De la misma forma, B ya no tiene ninguna dependencia de A.
+
+Hay otra forma de solucionar esto con el uso del patrón Observador, donde la clase A se comunica con la clase B a través de un evento. Esto permite que la clase B no dependa de A directamente, pero sigue siendo una dependencia indirecta.
+
+- **Código muerto:** Funcionalidades no utilizadas añaden complejidad innecesaria y pueden generar confusión.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class Calculadora
+		{
+				// Método que se utiliza en el código
+				public int Sumar(int a, int b)
+				{
+						return a + b;
+				}
+
+    			// Método obsoleto o no utilizado
+    			public int Restar(int a, int b)
+    			{
+    					return a - b;
+    			}
+
+    			// Método obsoleto o no utilizado
+    			public int Multiplicar(int a, int b)
+    			{
+    					return a * b;
+    			}
+
+    			// Variable no utilizada
+    			private int resultadoPrevio;
+
+    			// Método que se utiliza en el código
+    			public void MostrarResultado(int resultado)
+    			{
+    					Console.WriteLine($"El resultado es: {resultado}");
+    			}
+    	}
+
+    	class Program
+    	{
+    			static void Main(string[] args)
+    			{
+    					Calculadora calc = new Calculadora();
+
+    					// Solo se usa el método Sumar y MostrarResultado
+    					int suma = calc.Sumar(5, 3);
+    					calc.MostrarResultado(suma);
+    			}
+    	}
+     ```
+    </div>
+
+</details>
+
+Supongamos que tenemos una clase que incluye métodos y variables que ya no se usan, pero que permanecen en el código debido a la evolución del proyecto o simplemente porque no fueron eliminados adecuadamente. Este código muerto añade ruido y hace que el sistema sea más difícil de entender, ya que un nuevo desarrollador podría preguntarse por qué están ahí o si es seguro eliminarlos.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+	public class Calculadora
+	{
+			// Método que se utiliza en el código
+			public int Sumar(int a, int b)
+			{
+					return a + b;
+			}
+
+    		// Método que se utiliza en el código
+    		public void MostrarResultado(int resultado)
+    		{
+    				Console.WriteLine($"El resultado es: {resultado}");
+    		}
+    }
+
+    class Program
+    {
+    		static void Main(string[] args)
+    		{
+    				Calculadora calc = new Calculadora();
+
+    				// Solo se usa el método Sumar y MostrarResultado
+    				int suma = calc.Sumar(5, 3);
+    				calc.MostrarResultado(suma);
+    		}
+
+}
+
+````
+</div>
+
+</details>
+
+Eliminar el código muerto es una de las mejores prácticas de mantenimiento que ayuda a reducir la complejidad innecesaria en el sistema, mejorando su legibilidad, mantenibilidad y reduciendo el riesgo de errores. Mantener un código limpio y actualizado es crucial para la salud a largo plazo de cualquier proyecto de software.
+
+- **Hardcoding:** (o "codificación rígida") ocurre cuando se insertan valores específicos directamente en el código fuente, en lugar de definirlos en un lugar flexible como un archivo de configuración, una base de datos, o como variables configurables.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class BaseDatos
+		{
+				public void Conectar()
+				{
+						// Hardcoding de credenciales y URL
+						string url = "jdbc:mysql://localhost:3306/miBaseDeDatos";
+						string usuario = "admin";
+						string contraseña = "password123";
+
+						// Lógica de conexión a la base de datos
+
+						Console.WriteLine($"Conectando a la base de datos en {url} con el usuario {usuario}...");
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						BaseDatos bd = new BaseDatos();
+						bd.Conectar();
+				}
+		}
+	```
+	</div>
+</details>
+
+El codigo muestra un sistema que se conecta a una base de datos utilizando un conjunto de credenciales y una URL que están hardcodeadas (escritas directamente en el código). Esto puede ser problemático, porque si en el futuro queremos cambiar las credenciales o usar un entorno diferente, tendríamos que modificar el código fuente, recompilar y redeployar el sistema.
+
+`Solución propuesta`:
+
+1. Definir el archivo de configuración (appsettings.json):
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```json
+	{
+		"ConnectionStrings": {
+			"BaseDeDatos": {
+				"Url": "jdbc:mysql://localhost:3306/miBaseDeDatos",
+				"Usuario": "admin",
+				"Contraseña": "password123"
+			}
+		}
+	}
+	```
+	</div>
+</details>
+
+2. Modificar la clase BaseDatos para leer los valores de configuración desde el archivo appsettings.json en lugar de hardcodearlos. (Tener en cuenta que se debe usar el paquete `Microsoft.Extensions.Configuration` para leer el archivo de configuración y `Microsoft.Extensions.Configuration.Json` para leer el archivo de configuración en formato JSON).
+
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		using System;
+		using Microsoft.Extensions.Configuration;
+		using System.IO;
+
+		public class BaseDatos
+		{
+				private readonly IConfiguration _config;
+
+				public BaseDatos(IConfiguration config)
+				{
+						_config = config;
+				}
+
+				public void Conectar()
+				{
+						// Obtener los valores desde el archivo de configuración
+						string url = _config["ConnectionStrings:BaseDeDatos:Url"];
+						string usuario = _config["ConnectionStrings:BaseDeDatos:Usuario"];
+						string contraseña = _config["ConnectionStrings:BaseDeDatos:Contraseña"];
+
+						Console.WriteLine($"Conectando a la base de datos en {url} con el usuario {usuario}...");
+						// Lógica de conexión omitida
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						// Cargar la configuración desde el archivo appsettings.json
+						var builder = new ConfigurationBuilder()
+								.SetBasePath(Directory.GetCurrentDirectory())
+								.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+						IConfiguration config = builder.Build();
+
+						// Crear instancia de BaseDatos con la configuración cargada
+						BaseDatos bd = new BaseDatos(config);
+						bd.Conectar();
+				}
+		}
+	```
+	</div>
+</details>
+
+Lo que más se ve en la solución es que se ha separado la lógica de conexión a la base de datos de la lógica de carga de la configuración. Esto permite que la lógica de conexión sea más flexible y fácil de mantener, ya que no necesitamos modificar el código para cambiar las credenciales o el entorno.
+
+- **Exceso de parámetros:** En una función es una señal de que está sobrecargada de responsabilidades, lo que viola el principio de Responsabilidad Única. Esto no solo dificulta la lectura y el mantenimiento del código, sino que también complica la reutilización de la función. Demasiados parámetros hacen que el código sea más propenso a errores y más difícil de probar.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class Reporte
+		{
+				public void GenerarReporte(string titulo, string autor, DateTime fecha, string contenido, string pieDePagina, string encabezado, int numPaginas)
+				{
+						Console.WriteLine($"Título: {titulo}");
+						Console.WriteLine($"Autor: {autor}");
+						Console.WriteLine($"Fecha: {fecha.ToShortDateString()}");
+						Console.WriteLine($"Encabezado: {encabezado}");
+						Console.WriteLine($"Contenido: {contenido}");
+						Console.WriteLine($"Número de páginas: {numPaginas}");
+						Console.WriteLine($"Pie de página: {pieDePagina}");
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						Reporte reporte = new Reporte();
+						reporte.GenerarReporte("Reporte de Ventas", "Juan Pérez", DateTime.Now, "Datos del reporte...", "Página 1", "Encabezado Ventas", 10);
+				}
+		}
+	```
+
+	</div>
+</details>
+
+La función GenerarReporte tiene demasiados parámetros, lo que la hace más difícil de leer y comprender, además asume muchas responsabilidades, como manejar el título, el autor, el contenido, el encabezado, etc., lo que podría estar mejor agrupado en un objeto o clase.
+
+Es fácil confundir el orden de los parámetros o pasar valores incorrectos, especialmente si son del mismo tipo
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class DatosReporte
+		{
+				public string Titulo { get; set; }
+				public string Autor { get; set; }
+				public DateTime Fecha { get; set; }
+				public string Contenido { get; set; }
+				public string PieDePagina { get; set; }
+				public string Encabezado { get; set; }
+				public int NumPaginas { get; set; }
+
+				public DatosReporte(string titulo, string autor, DateTime fecha, string contenido, string pieDePagina, string encabezado, int numPaginas)
+				{
+						Titulo = titulo;
+						Autor = autor;
+						Fecha = fecha;
+						Contenido = contenido;
+						PieDePagina = pieDePagina;
+						Encabezado = encabezado;
+						NumPaginas = numPaginas;
+				}
+		}
+
+		public class Reporte
+		{
+				public void GenerarReporte(DatosReporte datos)
+				{
+						Console.WriteLine($"Título: {datos.Titulo}");
+						Console.WriteLine($"Autor: {datos.Autor}");
+						Console.WriteLine($"Fecha: {datos.Fecha.ToShortDateString()}");
+						Console.WriteLine($"Encabezado: {datos.Encabezado}");
+						Console.WriteLine($"Contenido: {datos.Contenido}");
+						Console.WriteLine($"Número de páginas: {datos.NumPaginas}");
+						Console.WriteLine($"Pie de página: {datos.PieDePagina}");
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						DatosReporte datos = new DatosReporte(
+								"Reporte de Ventas",
+								"Juan Pérez",
+								DateTime.Now,
+								"Datos del reporte...",
+								"Página 1",
+								"Encabezado Ventas",
+								10
+						);
+
+						Reporte reporte = new Reporte();
+						reporte.GenerarReporte(datos);
+				}
+		}
+	```
+	</div>
+</details>
+
+Ahora la función GenerarReporte solo tiene un parámetro (DatosReporte), lo que la hace más clara y fácil de entender. Además, la clase DatosReporte agrupa todos los datos del reporte, lo que mejora la cohesión y hace que sea más lógico tratar con un solo objeto relacionado.
+
+Si necesitamos agregar más información al reporte, podemos modificar la clase DatosReporte sin afectar la firma del método GenerarReporte, lo que facilita el mantenimiento.
+
+- **Exceso de comentarios:** Un exceso de comentarios puede ser una señal de que el código no es lo suficientemente claro por sí mismo. Los comentarios deberían utilizarse para aclarar aspectos que el código no puede expresar de manera directa.
+
+`Problemática`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class Calculadora
+		{
+				// Este método suma dos números enteros
+				public int Sumar(int a, int b)
+				{
+						// Declaro una variable para almacenar el resultado
+						int resultado = a + b;
+
+						// Devuelvo el resultado de la suma
+						return resultado;
+				}
+
+				// Este método resta dos números enteros
+				public int Restar(int a, int b)
+				{
+						// Declaro una variable para almacenar el resultado
+						int resultado = a - b;
+
+						// Devuelvo el resultado de la resta
+						return resultado;
+				}
+
+				// Este método multiplica dos números enteros
+				public int Multiplicar(int a, int b)
+				{
+						// Declaro una variable para almacenar el resultado
+						int resultado = a * b;
+
+						// Devuelvo el resultado de la multiplicación
+						return resultado;
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						// Creo una instancia de la clase Calculadora
+						Calculadora calc = new Calculadora();
+
+						// Llamo al método Sumar para sumar dos números
+						int suma = calc.Sumar(3, 5);
+						Console.WriteLine($"Suma: {suma}");
+
+						// Llamo al método Restar para restar dos números
+						int resta = calc.Restar(10, 4);
+						Console.WriteLine($"Resta: {resta}");
+
+						// Llamo al método Multiplicar para multiplicar dos números
+						int multiplicacion = calc.Multiplicar(2, 7);
+						Console.WriteLine($"Multiplicación: {multiplicacion}");
+				}
+		}
+	```
+	</div>
+</details>
+
+Muchos comentarios explican acciones triviales que el código ya deja claro, como "Declaro una variable para almacenar el resultado" o "Devuelvo el resultado de la suma". Aunque los comentarios ayudan, el código podría ser más claro por sí solo, eliminando la necesidad de tantos comentarios.
+Si el código cambia, es fácil olvidarse de actualizar los comentarios, lo que puede llevar a comentarios obsoletos o incorrectos.
+
+`Solución propuesta`:
+
+<details open>
+  <summary>Código (Clic para ver/ocultar)</summary>
+  <div>
+	```csharp
+		public class Calculadora
+		{
+				// Los nombres de métodos son claros y no necesitan comentarios
+				public int Sumar(int primerNumero, int segundoNumero)
+				{
+						return primerNumero + segundoNumero;
+				}
+
+				public int Restar(int primerNumero, int segundoNumero)
+				{
+						return primerNumero - segundoNumero;
+				}
+
+				public int Multiplicar(int primerNumero, int segundoNumero)
+				{
+						return primerNumero * segundoNumero;
+				}
+		}
+
+		class Program
+		{
+				static void Main(string[] args)
+				{
+						Calculadora calculadora = new Calculadora();
+
+						// Los nombres de los métodos y variables hacen que el código sea fácil de entender
+						int suma = calculadora.Sumar(3, 5);
+						Console.WriteLine($"Suma: {suma}");
+
+						int resta = calculadora.Restar(10, 4);
+						Console.WriteLine($"Resta: {resta}");
+
+						int multiplicacion = calculadora.Multiplicar(2, 7);
+						Console.WriteLine($"Multiplicación: {multiplicacion}");
+				}
+		}
+	```
+	</div>
+</details>
+
+Para solucionar este problema, podemos:
+a. Utilizar nombres claros para métodos y variables que describan su propósito.
+b. Dejar que el código claro hable por sí solo.
+c. Solo usar comentarios donde el código no puede expresar directamente la intención.
+
+---
+
+Para más información, pueden ver: [Code Smells](https://refactoring.guru/es/refactoring/smells).
+
+Identificar y manejar los 'code smells' es fundamental dentro de las buenas prácticas, ya que al abordar estos problemas desde el principio, se fortalece la estructura del código, lo que resulta en un software de mayor calidad, más sostenible y más fácil de mantener a largo plazo.
+
+> Les recomiendo 2 libros en caso de que quieran ver un poco más de las buenas prácticas.
+>
+> - [Clean code](https://www.amazon.com/-/es/Robert-C-Martin/dp/8441532109)
+> - [Código Sostenible](https://savvily.es/libros/codigo-sostenible/)
+>
+> Ambos valen la pena. Y claro que hay más, incluso mejores, pero son los que me he leído.
+
+## Conclusión
+
+Seguir **buenas prácticas** no solo mejora la calidad del código, sino que también facilita su mantenimiento y escalabilidad. Aplicar principios como DRY (Don't Repeat Yourself), elegir nombres significativos y estar atentos a los `code smells` son pasos cruciales para escribir código que sea fácil de entender y evolucionar con el tiempo.
+
+Es importante recordar que la refactorización es una parte natural del proceso de desarrollo y no debe ser temida. A medida que el código evoluciona, es inevitable enfrentar cierta deuda técnica. Sin embargo, nuestro reto como desarrolladores es minimizar esta deuda técnica mediante la aplicación constante de **buenas prácticas** y la mejora continua del código.
+
+Como desarrolladores, nuestro objetivo debe ser siempre escribir código que otros (y nosotros mismos) podamos entender y mejorar en el futuro. Recuerden que leemos más código del que escribimos, por lo que seguir **buenas prácticas** no solo es una responsabilidad, sino una inversión en la calidad y la sostenibilidad del software.
+
+Gracias por leer.
