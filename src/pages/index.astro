@@ -38,7 +38,9 @@ const posts = await getCollection("blog", excludeDrafts).then(sortBlogPosts);
             <li class="py-12">
               <article>
                 <div class="space-y-2 xl:grid xl:grid-cols-4 space-x-4 xl:space-y-0 xl:items-stretch">
-                  <ListPostCover {post} class="space-y-5 xl:col-span-1" />
+                  <Link href={`/blog/${post.slug}`}>
+                    <ListPostCover {post} class="space-y-5 xl:col-span-1" />
+                  </Link>
                   <div class="space-y-5 xl:col-span-3">
                     <div class="space-y-6">
                       <div>
