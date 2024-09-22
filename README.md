@@ -23,7 +23,7 @@ Publico artículos que contienen ejemplos prácticos y discusiones sobre diverso
 
 ## Tecnologías Utilizadas
 
-- **Astro (v5.o beta)** : Framework para sitios web estáticos.
+- **Astro 5.0 Beta Release** : Framework para sitios web estáticos.
 - **Markdown**: Lenguaje de marcado para la creación de contenido.
 - **Tailwind CSS**: Framework CSS de código abierto.
 - **TypeScript**: Lenguaje de programación de JavaScript.
