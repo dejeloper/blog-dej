@@ -17,7 +17,7 @@ export const NAVIGATION = [
 export const POST_METADATA = {
   defaultLayout: "column",
   showFullWidthCover: false,
-  showCover: false,
+  showCover: true,
   showTags: true,
   showDate: true,
   showSummary: true,

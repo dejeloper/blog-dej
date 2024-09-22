@@ -14,6 +14,7 @@ type Props = {
 const {
   post: {
     data: { cover, title, date },
+    slug
   },
 } = Astro.props;
 ---
@@ -25,6 +26,7 @@ const {
   {
     cover && (
       <Image
+        transition:name={`${slug}-image`}
         src={cover}
         alt={title}
         widths={[300, 600, 1000]}
