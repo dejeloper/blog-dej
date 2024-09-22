@@ -1,7 +1,7 @@
 ---
 import "@/styles/global.css";
 import { SITE_METADATA } from "@/consts";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import "@fontsource/onest";
 import { SEO } from "astro-seo";
 import { getEntry, type CollectionEntry } from "astro:content";
@@ -132,5 +132,5 @@ const twitterCreator = article?.authorTwitter || creator.data.twitter;
       }),
     }}
   />
-  <ViewTransitions />
+  <ClientRouter />
 </head>
