@@ -21,6 +21,13 @@ El blog está dirigido a cualquier persona interesada en el desarrollo de softwa
 
 Publico artículos que contienen ejemplos prácticos y discusiones sobre diversos temas. No se trata de tutoriales paso a paso, sino de exploraciones y reflexiones sobre conceptos clave.
 
+## Tecnologías Utilizadas
+
+- **Astro (v5.o beta)** : Framework para sitios web estáticos.
+- **Markdown**: Lenguaje de marcado para la creación de contenido.
+- **Tailwind CSS**: Framework CSS de código abierto.
+- **TypeScript**: Lenguaje de programación de JavaScript.
+
 ## Contacto y Redes Sociales
 
 Puedes encontrarme y seguir mi trabajo en las siguientes plataformas:
