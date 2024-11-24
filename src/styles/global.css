@@ -23,3 +23,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:focus {
   transition: background-color 600000s 0s, color 600000s 0s;
 }
+
+.progress-bar {
+  @apply bg-blue-400/80 dark:bg-pink-500/80 border border-blue-600 dark:border-pink-700;
+}
