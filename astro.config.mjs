@@ -6,6 +6,8 @@ import solidJs from "@astrojs/solid-js";
 import { SITE_METADATA } from "./src/consts.ts";
 import metaTags from "astro-meta-tags";
 
+import { remarkReadingTime } from "./plugins/remark-reading-time.mjs";
+
 import robotsTxt from "astro-robots-txt";
 
 export default defineConfig({
@@ -19,4 +21,7 @@ export default defineConfig({
     metaTags(),
     robotsTxt(),
   ],
+  markdown: {
+    remarkPlugins: [remarkReadingTime],
+  },
 });

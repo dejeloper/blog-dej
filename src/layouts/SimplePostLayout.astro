@@ -33,7 +33,7 @@ const articleOgDetails = {
   cover: post.data.cover,
 };
 
-const { Content, headings } = await post.render();
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
 ---
 
 <RootLayout
@@ -72,6 +72,11 @@ const { Content, headings } = await post.render();
         }
       </header>
       <div class="grid-rows-[auto_1fr] pb-8">
+        <div
+          class="space-y-1 text-base font-medium leading-6 text-gray-500 dark:text-gray-400 p-4"
+        >
+          <span>Tiempo de lectura: {remarkPluginFrontmatter.minutesRead}</span>
+        </div>
         {
           post.data.draft && (
             <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-500 dark:border-yellow-300 mt-10">
