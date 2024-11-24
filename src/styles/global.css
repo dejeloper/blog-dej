@@ -27,3 +27,7 @@ input:-webkit-autofill:focus {
 .progress-bar {
   @apply bg-blue-400/80 dark:bg-pink-500/80 border border-blue-600 dark:border-pink-700;
 }
+
+.sampleContainer {
+  @apply p-4 mb-4 text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 border;
+}
