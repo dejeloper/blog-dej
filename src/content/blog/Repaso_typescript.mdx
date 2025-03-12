@@ -1,0 +1,806 @@
+---
+title: Repaso rápido de TypeScript
+date: 2025-03-09
+draft: false
+postLayout: simple
+summary: Repaso rápido de las características de TypeScript
+tags: ["javascript", "typescript"]
+cover: "10_Typescript_Repaso/cover.webp"
+---
+
+# Repaso rápido de TypeScript
+
+## Introducción
+
+TypeScript es un superset de JavaScript desarrollado por Microsoft que añade tipado estático al lenguaje. Esto permite definir tipos para variables, funciones, clases e interfaces, así como crear tipos personalizados y utilizar interfaces para estructurar mejor el código.
+
+<div class="sampleContainer">
+  Esta entrada es un repaso rápido de las características de TypeScript, no
+  tiene ninguna intención de ser un tutorial completo, pero es una introducción
+  a algunas de sus características más importantes.
+</div>
+
+## Generalidades
+
+- Typescript infiere que los tipos de los valores son los que se declaran y no se pueden cambiar después. Por ejemplo, si declaramos una variable con un valor numérico, no podemos cambiarla a un valor de tipo string.
+
+```javascript
+// Ambos son válidos.
+const name = "Jhonatan";
+const surname: string = "Guerrero";
+```
+
+- Si queremos cambiar el contenido de una variable, debemos hacerlo por el mismo tipo. Por ejemplo,
+  Pero si cambiamos el contenido de la variable a un valor diferente, no funciona. Por ejemplo, si cambiamos el contenido de la variable a un número, se produce un error.
+
+```javascript
+let name = "Jhonatan";
+name = "Guerrero"; ✅ // Funciona correctamente.
+name = 50; ❌ // Error porque no se puede asignar un número a una variable de tipo string.
+name = '50'; ✅ // Ahora, si este número lo definimos como string, funciona correctamente.
+```
+
+- Tener en cuenta que se usa <code>let</code> para declarar variables, y <code>const</code> para variables que no se pueden cambiar (constantes). Se sugiere que siempre se use <code>const</code> para declarar variables y si es requerido hacerle cambios, entonces si se utiliza <code>let</code>.
+
+```javascript
+const name = "Jhonatan";
+let age = 24;
+```
+
+- Para asignar el tipo de una variable, se utiliza el operador <code>:</code>. Por ejemplo, si queremos que la variable <code>nombre</code> sea de tipo <code>string</code>, podemos hacerlo de la siguiente manera:
+
+Funciona para cualquier tipo de dato, por ejemplo, si queremos que la variable <code>edad</code> sea de tipo <code>number</code>, podemos hacerlo de la siguiente manera:
+
+```javascript
+const age: number = 24;
+```
+
+- Aunque se tiene la idea de que no se puede cambiar el tipo de una variable, en realidad, se puede definir varios tipos para una variable. Por ejemplo, si queremos que una variable porcentaje sea de tipo <code>number</code> y que string para que nos diga que está vacío o lleno, podemos hacerlo de la siguiente manera:
+
+```javascript
+let percentage: number | string;
+
+percentage = "empty";
+percentage = 50;
+percentage = "full";
+```
+
+No se recomienda utilizarlo mucho, ya que puede ser confuso y complicar el código. Sin embargo si se recomienda utilizarlo en casos específicos.
+Por ejemplo, para que una variable sea de tipo <code>number</code> o <code>null</code>
+
+```javascript
+let percentage: number | null;
+
+percentage = null;
+percentage = 0;
+percentage = 50;
+```
+
+## Tipos básicos
+
+### Primitivos
+
+Los tipos primitivos son los tipos de datos que se utilizan para representar los valores de los datos primitivos, como números, cadenas de texto, booleanos y null.
+
+```javascript
+const name: string = "Jhonatan"; // Cadena de texto
+const age: number = 24; // Número
+const isEmployed: boolean = true; // Booleano
+const isMarried: boolean | null = null; // Booleano o null
+```
+
+### Arrays
+
+Arrays o Arreglos son colecciones de valores que se pueden acceder por índice.
+
+```javascript
+// Array de números
+const numbers: number[] = [1, 2, 3, 4, 5];
+// Array de cadenas de texto
+const names: string[] = ["Ana", "Maria", "Juan", "Emilia"];
+// Este array es inferido como (string | number | boolean)[] es decir, es un array de cadenas de texto, números o booleanos
+const dataMixed = ["Ana", 24, true, "Maria", 25]; ❌ // No es recomendable aunque funciona
+```
+
+Para usar el contenido de un array, se puede acceder a los elementos por su índice.
+
+```javascript
+const names: string[] = ["Ana", "Maria", "Emilia"];
+
+console.log("Nombre 1: " + names[0]); // Ana
+console.log("Nombre 2: " + names[1]); // Maria
+console.log("Nombre 3: " + names[2]); // Emilia
+
+// También se puede acceder a un elemento de un array usando un índice negativo
+console.log("Nombre 3: " + names[-1]); // Emilia
+```
+
+Si no existe un elemento en un array con un índice determinado, se devuelve undefined. Se puede evitar resultados indefinidos usando el operador condicional (ternario).
+
+```javascript
+const names: string[] = ["Ana", "Maria", "Emilia"];
+const name = names[3]; // undefined
+const name = names[3] || "No existe"; // No existe
+
+// Si no existe el nombre, se devuelve el valor por defecto "No existe"
+const name = names[3] ?? "No existe"; // No existe
+
+const Emilia = names[2] ?? "No existe"; // Emilia
+console.log(Emilia); // Emilia ✅
+```
+
+#### Desestructuración de arrays
+
+Para la desestructuración (la desestructuración es una forma de extraer datos de arrays u objetos y asignarlos a variables) en arrays, se usan las llaves <code>[]</code>.
+
+```javascript
+const names: string[] = ["Ana", "Maria", "Emilia"];
+const [name1, name2, name3] = names;
+
+console.log(name1); // Ana
+console.log(name2); // Maria
+console.log(name3); // Emilia
+
+// En caso de que solo quiera a Emilia, se puede usar igualmente la desestructuración
+const [, , Emilia] = names;
+console.log(Emilia); // Emilia
+
+// Si no viene ningún elemento, se devuelve undefined, se puede evitar esto usando el valor por defecto
+const names: string[] = ["Ana", "Maria"];
+const [, , Emilia = "No existe"] = names;
+console.log(Emilia); // 'No existe'
+```
+
+### Objects
+
+Objects u Objetos son colecciones de pares **clave-valor**.
+
+```javascript
+const person = {
+  name: "Jhonatan",
+  age: 24,
+  isEmployed: true,
+  isMarried: true,
+};
+```
+
+Ahora, con respecto al tipado, no puedo poner que name es un string o que age sea un número.
+
+```javascript
+const person = {
+  name: string: "Jhonatan", ❌ // Error al definir el tipo de la propiedad/ asignar  el tipo
+  age: number: 24 ❌ // Error en cualquier tipo de dato si se hace de esta manera
+};
+```
+
+### Interfaces
+
+Interfaces son una forma de definir la estructura de un objeto. La interfaz define las propiedades y sus tipos, pero no puede tener valores. Cuando se transpila a JavaScript, las interfaces no generan código.
+
+```javascript
+interface Person {
+  name: string; // Propiedad name de tipo string
+  age: number; // Propiedad age de tipo number
+  isEmployed: boolean; // Propiedad isEmployed de tipo boolean
+  isMarried: boolean | null; // Propiedad isMarried de tipo boolean o null
+}
+
+// Objeto con la interfaz Person
+const person: Person = {
+  name: "Jhonatan",
+  age: 24,
+  isEmployed: true,
+  isMarried: true,
+};
+```
+
+Si se quiere que una de las propiedades sea obligatoria, se puede hacer poniendo un signo de admiración después del nombre de la propiedad, pero si se quiere es que una de las propiedades sea opcionales, se hace poniendo un signo de interrogación después del nombre de la propiedad.
+En este caso, la propiedad **name** es obligatoria y **isMarried** es opcional.
+
+```javascript
+interface Person {
+  name!: string; // Propiedad name obligatoria de tipo string
+  age: number;
+  isEmployed: boolean;
+  isMarried?: boolean; // Propiedad isMarried opcional
+}
+
+const person: Person = {
+  name: "Jhonatan", // name es obligatorio
+  age: 24,
+  isEmployed: true,
+  // isMarried es opcional
+};
+```
+
+#### Anidación con interfaces
+
+Por buenas prácticas, se recomienda que si un objeto tiene una estructura anidada con otros objetos, se defina una interfaz para cada nivel de anidamiento. Esto permite que se tenga un mayo control sobre el tipo de datos con el que se trabaja.
+
+```javascript
+// Se define una interfaz para Persona y una para Dirección
+interface Person {
+  name: string;
+  age: number;
+  address: Address;
+}
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+// Se puede usar la interfaz como un objecto e inferir las propiedades requeridas o se puede crear un objeto propio
+const person: Person = {
+  name: "Maria",
+  age: 24,
+  address: {
+    street: "123 Main St",
+    city: "New York",
+    state: "NY",
+    zip: "10001",
+  },
+};
+
+const addressPerson2: Address = {
+  street: "456 Elm St",
+  city: "Los Angeles",
+  state: "CA",
+  zip: "90210",
+};
+
+const person2: Person = {
+  name: "Emily",
+  age: 25,
+  address: addressPerson2,
+};
+```
+
+#### Desestructuración de interfaces
+
+Si se quisiera obtener los datos internos del objeto dentro de otro objeto, lo más recomendable es usar la desestructuración, aunque esto es propio de JavaScript y no de TypeScript.
+
+```javascript
+interface Person {
+  name: string;
+  age: number;
+  address: Address;
+}
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+const person: Person = {
+  name: "Maria",
+  age: 24,
+  address: {
+    street: "123 Main St",
+    city: "New York",
+    state: "NY",
+    zip: "10001",
+  },
+};
+
+// Se puede imprimir los datos internos del objeto
+console.log(person.name); // Maria
+console.log(person.age); // 24
+console.log(person.address.street); // 123 Main St
+
+// Pero se puede usar la desestructuración para obtener los datos internos del objeto
+const {
+  name,
+  age,
+  address: { street, city, state, zip }, // ✅ Desestructuración de objetos anidados
+} = person;
+
+// Otra forma de hacerlo es por pasos
+const { name, age, address } = person;
+const { street, city, state, zip } = address;
+
+//Ambos casos imprimen lo mismo
+console.log(name); // Maria
+console.log(age); // 24
+console.log(street); // 123 Main St
+```
+
+#### Import y exportación de interfaces
+
+Para reutilizar las interfaces creadas, basta con exportarlas donde se crean e importarlas donde se necesiten.
+
+```javascript
+// Creación de una interfaz y se exporta inmediatamente
+export interface Person {
+  name: string;
+  age: number;
+  address: Address;
+}
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+```
+
+Para importar la interfaz que se desea, se debe usar la palabra clave **import** y luego el nombre de la interfaz.
+
+```javascript
+// Importación de la interfaz Person
+import { Person } from "./interfaces.ts"; // la ruta es relativa al archivo donde se está usando la interfaz
+
+const person: Person = {
+  name: "Maria",
+  age: 24,
+  address: {
+    street: "123 Main St",
+    city: "New York",
+    state: "NY",
+    zip: "10001",
+  },
+};
+
+console.log(person.name); // Maria
+
+// Tener en cuenta que se puede exportar una interfaz padre y la interfaz hija no es necesaria
+// Igualmente se debe seguir el orden de la jerarquía de herencia
+
+const person: Person = {
+  name: "Maria",
+  age: 24,
+  address: "123 Main St", // ❌ Error porque no se puede asignar un string a una interfaz
+};
+
+// Si se requiere, se pueden exportar las interfaces hijas
+import { Person, Address } from "./interfaces.ts";
+
+const addressPerson: Address = {
+  street: "123 Main St",
+  city: "New York",
+  state: "NY",
+  zip: "10001",
+};
+
+const person: Person = {
+  name: "Maria",
+  age: 24,
+  address: addressPerson, // ✅ Correcto porque addressPerson es de tipo Address
+};
+
+console.log(person.name); // Maria
+console.log(person.age); // 24
+console.log(person.address.street); // 123 Main St
+```
+
+## Funciones
+
+Las funciones son bloques de código que se pueden llamar y que pueden tomar argumentos y devolver valores.
+Por defecto **TODAS** las funciones de typescript retornan "void", diferente a JavaScript donde las funciones retornan "undefined".
+Las funciones se pueden exportar y importar de manera similar a las interfaces.
+
+```javascript
+// Ambas funciones retornan void
+function greet() {
+  console.log("Hola!");
+}
+function hello(): void {
+  console.log("Hola!");
+}
+```
+
+#### Argumentos básicos en funciones
+
+Se recomienda que todos los parametros/argumentos de una función tengan un tipo, para evitar que por defecto la función los asigne como <code>any</code>.
+Para definir los tipos de los argumentos y el valor de retorno de una función, se utiliza el operador <code>:</code>, igual que los tipos de las variables.
+
+```javascript
+// Función que suma dos números y devuelve un número
+function addNumbers(a: number, b: number): number {
+  return a + b;
+}
+
+const addRes1 = addNumbers(2, 3); // TypeScript infiere el tipo de resultado como number
+const addRes2: number = addNumbers(2, 3); // Podemos especificar el tipo de resultado
+const addRes3: string = addNumbers(2, 3); // ❌ Error porque la función no devuelve un string
+
+// Funcion que recibe un string y devuelve un string
+function greet(name: string): string {
+  return `Hola, ${name}!`;
+}
+
+const greeting1 = greet("Jhonatan"); // TypeScript infiere el tipo de greeting como string
+const greeting2: string = greet("Jhonatan"); // Podemos especificar el tipo de greeting
+const greeting3: number = greet("Jhonatan"); // ❌ Error porque la función no devuelve un número
+
+// Funcion que recibe dos números y devuelve un número
+// En este caso, la variable multiply tiene el tipo de retorno number
+const multiply = (firstNumber: number, secondNumber: number): number => {
+  return firstNumber * secondNumber;
+};
+
+// Función que recibe un número y devuelve su cuadrado o su cubo.
+// En ambos casos, el tipo de retorno es number. En uno se infiere el tipo de retorno, en el otro se especifica
+const square = (num: number) => num * num;
+const cube = (num: number): number => num * num * num;
+```
+
+Si se requiere que una función tenga argumentos opcionales o con valor definidos por defecto se debe generar de la siguiente manera:
+
+```javascript
+// Función que me toma 3 numbers y devuelve el promedio
+// El primer argumento es obligatorio -> firstNumber: number
+// El segundo es opcional -> secondNumber?: number
+// El tercero es opcional con un valor por defecto de 10 -> thirdNumber: number = 10
+
+const average = (
+  firstNumber: number,
+  secondNumber?: number,
+  thirdNumber: number = 10
+): number => {
+  return (firstNumber + secondNumber + thirdNumber) / 3;
+};
+```
+
+#### Argumentos tipo Objects en funciones
+
+Cuando se requiere un argumento con tipos mucho más complejo que los tipos primitivos, una posibilidad es definir un objeto que contenga los diferentes tipos de datos que se requieren.
+
+En JavaScript podemos crear una función para agregar un producto a una factura que se va a almacenar en un array y luego imprimir el total de la factura.
+
+```javascript
+// Función que agrega un producto a una factura
+function addProductToInvoice(invoice, product) {
+  invoice.push(product);
+  invoice.total += product.price * product.quantity;
+  console.log(`Total de la factura: ${invoice.total}`);
+}
+```
+
+Esto es funcional, pero no es lo más óptimo, debido a que no sabemos si los argumentos <code>invoice</code> y <code>product</code> tiene esas propiedades. Para este tipo de casos, typescript nos ofrece la posibilidad de definir un objeto como argumento. _(Sé que me complico un poco con este ejemplo, pero quiero mostrar lo que puede llegar a hacerse con typescript)_.
+
+```javascript
+// Definicion de un objeto que contiene los diferentes tipos de datos que se requieren
+interface Invoice {
+  products: Product[];
+  total: number;
+  showTotal(): void;
+}
+
+interface Product {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+// Función que agrega un producto a una factura
+function addProductToInvoice(invoice: Invoice, product: Product) {
+  invoice.products.push(product);
+  // total de la factura es igual al precio del producto por la cantidad de cada producto
+  invoice.total = invoice.products.reduce(
+    (acc, product) => acc + product.price * product.quantity,
+    0
+  );
+}
+// Creación de dos productos
+const product1: Product = {
+  name: "Producto 1",
+  price: 10,
+  quantity: 2,
+};
+
+// Este producto tiene las características de producto, por lo cual, se infiere que es un producto
+const product2 = {
+  name: "Producto 2",
+  price: 5,
+  quantity: 3,
+};
+
+// Creación de una factura
+const invoice: Invoice = {
+  products: [],
+  total: 0,
+  showTotal() {
+    console.log(`Total de la factura: ${this.total}`);
+  },
+};
+
+// Agregar los productos a la factura
+addProductToInvoice(invoice, product1);
+invoice.showTotal(); // Total de la factura: 20
+
+addProductToInvoice(invoice, product2);
+invoice.showTotal(); // Total de la factura: 35
+```
+
+#### Desestructuración en las funciones
+
+Si se quieren usar desestructuraciones en las funciones, se pueden usar paréntesis para indicar el tipo de datos que se desean extraer.
+
+```javascript
+interface Product {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+// Función que recibe un array de productos y devuelve el total, el total con impuesto y la cantidad de productos
+function taxOperation(products: Product[]): number[] {
+  const tax = 0.19;
+  let total = 0;
+  let quantityProduct = 0;
+
+  products.forEach((product) => {
+    total += product.price * product.quantity;
+    quantityProduct += product.quantity;
+  });
+
+  return [total, total * tax, quantityProduct];
+}
+
+// Creación de dos productos
+const products: Product[] = [
+  { name: "Producto 1", price: 10, quantity: 2 },
+  { name: "Producto 2", price: 5, quantity: 3 },
+];
+
+// Desestructuración de la función taxOperation
+const [total, totalTax, quantityProduct] = taxOperation(products);
+
+console.log(total); // Total de la factura: 35
+console.log(totalTax); // Total de la factura con impuesto: 35.6
+console.log(quantityProduct); // Cantidad de productos: 5
+```
+
+En este ejemplo vemos que se usa la desestructuración para extraer los datos de la función taxOperation, que retorna un array de números.
+Tambien se puede en funciones y métodos.
+
+```javascript
+// La misma función taxOperation, pero con otras desestructuraciones
+// Se especifica el tipo de retorno
+function taxOperation(products: Product[]): [number, number, number] {
+  const tax = 0.19;
+  let total = 0;
+  let quantityProduct = 0;
+
+  // Desturcturación de la función
+  // Se obtiene las propiedades  quantity y price de cada elemento del array
+  products.forEach(({ quantity, price }) => {
+    total += price * quantity;
+    quantityProduct += quantity;
+  });
+
+  return [total, total * tax, quantityProduct];
+}
+
+// Si se modifica el retorno funciona de la misma manera
+const [total, totalTax, quantityProduct] = taxOperation(products);
+// Otro parametro no debería ser permitido
+// ❌ Error porque el retorno es un array de 3 números
+const [total, totalTax, quantityProduct, avgTotal] = taxOperation(products);
+```
+
+Para los parametros de las funciones, se pueden usar paréntesis para indicar el tipo de datos que se desean extraer.
+
+```javascript
+interface Invoice {
+  products: Product[];
+  total: number;
+  totalTax: number;
+  showTotal(): void;
+  showTotalTax(): void;
+}
+
+interface Product {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface taxs {
+  taxValue: number;
+}
+
+// Se crea una nueva interfaz para agregar un producto a una factura
+interface InvoiceProduct {
+  invoice: Invoice;
+  product: Product[];
+  tax: taxs;
+}
+
+// Creación de dos productos
+const product1: Product = {
+  name: "Producto 1",
+  price: 10,
+  quantity: 2,
+};
+
+const product2: Product = {
+  name: "Producto 2",
+  price: 5,
+  quantity: 3,
+};
+
+// Creación de una factura
+const invoice: Invoice = {
+  products: [],
+  total: 0,
+  totalTax: 0,
+};
+
+// Creación de un impuesto
+const tax: taxs = {
+  taxValue: 0.19,
+};
+
+// Función que agrega un producto a una factura
+function addProductToInvoice1(invoiceProduct: InvoiceProduct): Invoice {
+  const { invoice, product, tax } = invoiceProduct; // Desestructuración de los argumentos de la función
+
+  // Logica de agregar producto a factura y calcular el total
+  product.forEach((product) => {
+    invoice.products.push(precio);
+    invoice.total += product.price * product.quantity;
+    invoice.totalTax += product.price * product.quantity * tax.taxValue;
+  });
+
+  return invoice;
+}
+
+// Agregar los productos a la factura
+const invoice1: Invoice = addProductToInvoice1(
+  invoice,
+  [product1, product2],
+  tax
+);
+invoice1.showTotal(); // Total de la factura: 35
+invoice1.showTotalTax(); // Total de la factura con impuesto: 41.65
+
+// Otra forma de desestructurar los argumentos de la función
+function addProductToInvoice2({
+  invoice,
+  product,
+  tax,
+}: InvoiceProduct): Invoice {
+  const { taxValue } = tax; // Desestructuración de los argumentos de la función
+
+  product.forEach(({ price, quantity }) => {
+    invoice.products.push(product);
+    invoice.total += price * quantity;
+    invoice.totalTax += price * quantity * taxValue;
+  });
+
+  return invoice;
+}
+
+// Agregar los productos destructurando el argumento
+const invoice2: Invoice = addProductToInvoice2({
+  invoice,
+  product: [product1, product2],
+  tax,
+});
+invoice2.showTotal(); // Total de la factura: 35
+invoice2.showTotalTax(); // Total de la factura con impuesto: 41.65
+```
+
+## Clases y Constructores
+
+Las clases son una forma de crear objetos con propiedades y métodos. En TypeScript, las clases se definen con la palabra clave <code>class</code>.
+El constructor es un método especial que se ejecuta cuando se crea/instancia una clase. Se puede usar para inicializar propiedades y establecer relaciones entre propiedades.
+
+```javascript
+class Person {
+	public name: string; // Propiedad publica, es decir, se puede acceder desde cualquier parte del código
+	private age: number; // Propiedad privada, solo se puede acceder dentro de la clase
+
+	// Constructor de la clase, se ejecuta cuando se crea una instancia de la clase
+	// Los argumentos de constructor se pueden usar para inicializar propiedades
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+	// Método público, se puede acceder desde cualquier parte del código
+  sayHello() {
+    console.log(`Hola, soy ${this.name}`);
+  }
+}
+
+// Cómo se usa/instancia una clase
+// Los parametros de la clase son los que se pasan al constructor
+const person = new Person("Jhonatan", 24);
+person.sayHello(); // Hola, soy Jhonatan
+
+// ✅ Se puede acceder a las propiedades publicas de la clase
+console.log(person.name); // Jhonatan
+// ❌ Error porque no se puede acceder a la propiedad privada, aunque dependiend de la versión del JavaScript se puede ver el valor
+console.log(person.age);
+
+
+// Otra forma de definir una clase
+class Person {
+	// Constructor de la clase, se ejecuta cuando se crea una instancia de la clase
+  constructor(public name: string, private age: number = 18) {}
+  sayHello() {
+    console.log(`Hola, soy ${this.name}`);
+  }
+}
+
+const person = new Person("Jhonatan");
+console.log(object.name); // Jhonatan
+
+```
+
+### Herencia
+
+Las clases pueden heredar propiedades y métodos de otras clases. Para hacer esto, se usa la palabra clave <code>extends</code> y se definen los métodos y propiedades que se quieren heredar.
+
+```javascript
+// Definición de una clase base Person
+class Person {
+  constructor(public name: string, age: number = 18) {}
+}
+// Creación de una instancia de la clase Person
+const person = new Person("Jhonatan");
+
+// Definición de una clase que hereda de Person
+class Employee extends Person {
+	// La nueva clase tiene su propio constructor
+	// Si no se pone public o private, se infiere que es publico
+  constructor(name: string, age: number, salary: number) {
+		// Como se hereda de Person, se puede acceder a sus propiedades y métodos
+		// La palabra clave super se usa para acceder a los métodos y propiedades de la clase base
+    super(name, age);
+  }
+
+  getSalary() {
+    return this.salary;
+  }
+}
+
+//Creación de una instancia de la clase Employee
+let employee = new Employee("Jhonatan", 24, 1000);
+console.log(employee.getSalary()); // 1000
+```
+
+La herencia es importante, pero y ¿si no se quiere heredar de una clase base, pero si se requiere otra clase?
+Se puede implementar una clase que use una clase base pero que no dependa directamente de la otra. Es decir, si la clase Person cambia, la clase Employee no cambiará.
+
+```javascript
+class Person {
+  constructor(public name: string, age: number = 18) {}
+}
+// Creación de una instancia de la clase Person
+const personJhonatan = new Person("Jhonatan");
+
+class Employee{
+	constructor(code: string, salary: number, person: Person) {
+		this.code = code;
+		this.salary = salary;
+		this.person = person;
+	}
+}
+
+// Creación de una instancia de la clase Employee
+const employee = new Employee("1234", 1000, personJhonatan);
+
+// Si puede acceder a las propiedades de la clase Person
+console.log(employee.person.name); // Jhonatan
+
+```
+
+## Conclusiones
+
+Actualmente TypeScript es una gran herramienta de desarrollo. Los desarrolladores que usan TypeScript pueden escribir código más rápido, con menos errores y con mejores resultados. Es cierto que hay implicaciones adicionales como el compilador, la sintaxis y las herramientas de desarrollo, pero independientemente de esto, TypeScript es una herramienta que vale la pena aprender y usar.
+Personalmente uso TypeScript en mi trabajo diario (con Angular) y en proyectos personales (con React/Next.js).
+
+La idea de este post es dar una introducción a TypeScript. Sé que llega a ser muy largo, pero traté de condensarlo para tener una idea general de lo que se puede hacer con esta herramienta. Tener en cuenta que me faltaron algunos conceptos. Iré actualizando este post con el tiempo. Si desean saber más, pueden visitar la [documentación oficial de TypeScript](https://www.typescriptlang.org/es/docs/).
+
+Javascript es el lenguaje por naturaleza de la web, y es muy popular, pero tener a la mano una herramienta que pueda ayudar a desarrollar mejor es la mejor idea. Usen TypeScript, no se arrepentirán.
+
+Gracias por leer
